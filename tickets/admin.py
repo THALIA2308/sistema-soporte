@@ -4,6 +4,7 @@ from django.conf import settings
 from .models import Ticket
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
+from .utils import send_email_async
 
 admin.site.unregister(User)
 
@@ -64,7 +65,7 @@ class TicketAdmin(admin.ModelAdmin):
                             Saludos,
                             Soporte Técnico"""
                 
-                send_mail(subject, message, from_email=settings.DEFAULT_FROM_EMAIL, recipient_list=[obj.correo], fail_silently=False,)
+                send_email_async(subject, message, [obj.correo])
                 #messages.info(request, f"{subject}{message}")
 
             except Exception as e:
