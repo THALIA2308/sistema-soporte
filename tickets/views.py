@@ -1,3 +1,4 @@
+import requests
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.conf import settings
@@ -5,11 +6,33 @@ from .forms import TicketForm
 from .models import Ticket
 
 
+def enviar_a_n8n(ticket):
+    try:
+        payload = {
+            "id": ticket.id,
+            "titulo": ticket.titulo,
+            "descripcion": ticket.descripcion,
+            "usuario": ticket.usuario.email,
+            "estado": ticket.estado,
+        }
+
+        response = requests.post(
+            settings.N8N_WEBHOOK_URL,
+            json=payload,
+            timeout=10
+        )
+
+        response.raise_for_status()
+
+    except Exception as e:
+        print("Error enviando a n8n:", e)
+
 def crear_ticket(request):
     if request.method == 'POST':
         form = TicketForm(request.POST)
         if form.is_valid():
             ticket = form.save()
+            enviar_a_n8n(ticket)
 
             mensaje = f"""
 Nuevo Ticket N° {ticket.id}
@@ -29,16 +52,16 @@ Fecha: {ticket.fecha_creacion}
             """
 
             # Enviar correo a cliente + empresa
-            send_mail(
-                subject=f"Nuevo Ticket N° {ticket.id}",
-                message=mensaje,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[
-                    ticket.correo,        # quien envía el ticket
-                    "soporte@axede.cl",   # correo empresa
-                ],
-                fail_silently=False,
-            )
+           # send_mail(
+            #    subject=f"Nuevo Ticket N° {ticket.id}",
+             #   message=mensaje,
+              #  from_email=settings.EMAIL_HOST_USER,
+               # recipient_list=[
+                #    ticket.correo,        # quien envía el ticket
+                 #   "soporte@axede.cl",   # correo empresa
+               # ],
+                #fail_silently=False,
+            #)
 
             return redirect('ticket_exito')
     else:
