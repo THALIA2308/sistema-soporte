@@ -1,18 +1,26 @@
-import threading
-from django.core.mail import send_mail
 from django.conf import settings
+import requests
 
-def send_email_async(subject, message, recipient_list):
-    def task():
-        try:
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                recipient_list,
-                fail_silently=False,
-            )
-        except Exception as e:
-            print(f"Async email error: {e}")
 
-    threading.Thread(target=task).start()
+def enviar_a_n8n(ticket):
+    try:
+        payload = {
+            "id": ticket.id,
+            "edificio": ticket.edificio,
+            "nombre": ticket.nombre,
+            "cargo": ticket.cargo,
+            "estado": ticket.estado,
+            "correo": ticket.correo,
+            "categoria": ticket.categoria,
+        }
+
+        response = requests.post(
+            settings.N8N_WEBHOOK_URL,
+            json=payload,
+            timeout=10
+        )
+
+        response.raise_for_status()
+
+    except Exception as e:
+        print("Error enviando a n8n:", e)

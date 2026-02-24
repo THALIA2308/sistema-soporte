@@ -1,13 +1,10 @@
 from django.contrib import admin
-from django.core.mail import send_mail
-from django.conf import settings
 from .models import Ticket
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
-from .utils import send_email_async
+from .utils import enviar_a_n8n
 
 admin.site.unregister(User)
-
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'is_staff') 
 
@@ -50,23 +47,8 @@ class TicketAdmin(admin.ModelAdmin):
 
         if cambio_estado:
             try:
-                subject=f"Actualización Ticket N° {obj.id}"
-                message=f"""
-                            Estimado/a {obj.nombre},
+                enviar_a_n8n(obj)
 
-                            Tu ticket N° {obj.id} ha cambiado de estado.
-
-                            Nuevo estado: {obj.estado}
-
-                            Edificio: {obj.edificio}
-                            Categoría: {obj.categoria}
-                            Prioridad: {obj.prioridad}
-
-                            Saludos,
-                            Soporte Técnico"""
-                
-                send_email_async(subject, message, [obj.correo])
-                #messages.info(request, f"{subject}{message}")
 
             except Exception as e:
                 print(f"Error al enviar correo: {e}")
