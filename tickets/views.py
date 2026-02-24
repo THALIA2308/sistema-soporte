@@ -10,10 +10,12 @@ def enviar_a_n8n(ticket):
     try:
         payload = {
             "id": ticket.id,
-            "titulo": ticket.titulo,
-            "descripcion": ticket.descripcion,
-            "usuario": ticket.usuario.email,
+            "edificio": ticket.edificio,
+            "nombre": ticket.nombre,
+            "cargo": ticket.cargo,
             "estado": ticket.estado,
+            "correo": ticket.correo,
+            "categoria": ticket.categoria,
         }
 
         response = requests.post(
@@ -32,6 +34,7 @@ def crear_ticket(request):
         form = TicketForm(request.POST)
         if form.is_valid():
             ticket = form.save()
+            print(ticket)
             enviar_a_n8n(ticket)
 
             mensaje = f"""

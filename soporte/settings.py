@@ -141,7 +141,7 @@ EMAIL_HOST_PASSWORD = 'kwvl xlsq jlix eaef' # Temporal
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-N8N_WEBHOOK_URL="https://thaliaestefani.app.n8n.cloud/webhook/ticket-evento"
+N8N_WEBHOOK_URL= 'https://thaliaestefani.app.n8n.cloud/webhook-test/ticket-evento'
 # Development settings:
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
